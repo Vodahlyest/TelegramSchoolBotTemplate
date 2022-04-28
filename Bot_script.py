@@ -8,10 +8,8 @@ from telebot import types
 bot = telebot.TeleBot("5014044061:AAF952gfILnsysnH4Nqm0O8HTX-VfIzn-Qs")
 
 button_names = ['five_1', 'five_2', 'five_3', 'five_4', 'five_5', 'five_6', 'five_7', 'five_8', 'five_9', 'five_10', 'five_11', 'six_1', 'six_2', 'six_3', 'six_4', 'six_5', 'six_6', 'six_7', 'six_8', 'six_9', 'six_10', 'six_11', 'seven_1', 'seven_2', 'seven_3', 'seven_4', 'seven_5', 'seven_6', 'seven_7', 'seven_8', 'seven_9', 'seven_10', 'seven_11', 'seven_12', 'eight_1', 'eight_2', 'eight_3', 'eight_4', 'eight_5', 'eight_6', 'eight_7', 'eight_8', 'eight_9', 'eight_10', 'nine_1', 'nine_2', 'nine_3', 'nine_4','nine_5', 'nine_6', 'nine_7', 'nine_8', 'ten_1', 'ten_2', 'ten_3', 'ten_4', 'ten_5', 'ten_6', 'ten_7', 'eleven_1', 'eleven_2', 'eleven_3', 'eleven_4', 'eleven_5', 'eleven_6', 'eleven_7']        #из файлика с именами для кнопок запихиваем каждое название в список
-
-secondary_classes = ['five', 'six', 'seven', 'eight', 'nine']     #массивы для сортировки названий классов и кнопок по парралеллям
+    #массивы для сортировки названий классов и кнопок по парралеллям
 secondary_signs = ['5', '6', '7', '8', '9']                       #(первые 2 - с 5 по 5, остальные 2 - с 10 по 11 класс)
-high_classes =  ['ten', 'eleven']
 high_signs = ['10', '11']
 
 teacher_categories_dict = {
@@ -23,13 +21,6 @@ teacher_categories_dict = {
     'Учителя физической культуры, технологии и ОБЖ':'http://www.sch2001.ru/index.php?sid=1063',
     'Учителя творческих дисциплин':'http://www.sch2001.ru/index.php?sid=1062'
 }
-
-def sort_buttons(class_type, origin_list, sorted_list):           #функция для сортировки кнопок по парралеллям
-    for button in origin_list:
-        button_splited = button.split('_')
-        for clas in class_type:
-            if clas == button_splited[0]:
-                sorted_list.append(button)
 
 def sort_button_signs(class_type, sorted_sign_list):              #функция для сортировки названий классов по парралелям
     with open("классы") as f:
@@ -45,11 +36,6 @@ signs_high = []          #назания классов с 10 по 11
 signs_secondary = []     #названия классов с 5 по 9
 sort_button_signs(secondary_signs, signs_secondary)
 sort_button_signs(high_signs, signs_high)
-
-high_school_buttons = []            #кнопки для классов с 10 по 11
-secondary_school_buttons = []       #кнопки для классов с 5 по 9
-sort_buttons(secondary_classes, button_names, secondary_school_buttons)
-sort_buttons(high_classes, button_names, high_school_buttons)
 
 
 def give_timetable(message, link):          #функция выдает расписание для класса. Передаваемые аргументы - название класса и ссылка на раздел сайта с расписанием для этого класса
@@ -94,20 +80,16 @@ back_button = types.KeyboardButton('Назад')
 class_markup_main.add(high_grades, secondary_grades, back_button)
 
 class_markup_secondary = types.ReplyKeyboardMarkup(resize_keyboard = True)    #выбор классов (5-9 парралель)
-sign_index_secondary = 0
-for button in secondary_school_buttons:        #заполняем при помощи цикла меню выбора классов кнопками из массива с кнопками для 5-9 классов
-    button = types.KeyboardButton(signs_secondary[sign_index_secondary])
+for button_name in signs_secondary:   #заполняем при помощи цикла меню выбора классов кнопками из массива с кнопками для 5-9 классов
+    button = types.KeyboardButton(button_name)
     class_markup_secondary.add(button)
-    sign_index_secondary += 1
 back_menu_button1 = types.KeyboardButton('Назад')
 class_markup_secondary.add(back_menu_button1)
 
 class_markup_high = types.ReplyKeyboardMarkup(resize_keyboard = True)         #выбор классов (10-11 паралелль)
-sign_index_high = 0
-for button in high_school_buttons:
-    button = types.KeyboardButton(signs_high[sign_index_high])
+for button_name in signs_high:
+    button = types.KeyboardButton(button_name)
     class_markup_high.add(button)
-    sign_index_high += 1
 back_menu_button2 = types.KeyboardButton('Назад')
 class_markup_high.add(back_menu_button2)
 
