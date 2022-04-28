@@ -4,26 +4,26 @@ import requests
 import telebot
 from telebot import types
 
-# создается бот и контейнер для кнопок действий
-bot = telebot.TeleBot("5014044061:AAF952gfILnsysnH4Nqm0O8HTX-VfIzn-Qs")
+# создается бот (в конструкторе класса telebot.TeleBot указывается токен для связки с ботом. его можно получить у бота BotFather в телеграм)
+bot = telebot.TeleBot("your_token")
 
-secondary_signs = ['5', '6', '7', '8', '9']
+secondary_signs = ['5', '6', '7', '8', '9'] # - Массивы для сортировки классов по парралелям: первый массив 5-9 парралель, второй 10-11.
 high_signs = ['10', '11']
 
-teacher_categories_dict = {
-    'Учителя русского языка и литературы':'http://www.sch2001.ru/index.php?sid=1045',
-    'Учителя математики и информатики':'http://www.sch2001.ru/index.php?sid=1046',
-    'Учителя иностранного языка':'http://www.sch2001.ru/index.php?sid=1058',
-    'Учителя естественно-научных предметов':'http://www.sch2001.ru/index.php?sid=1059',
-    'Учителя истории и обществознания':'http://www.sch2001.ru/index.php?sid=1060',
-    'Учителя физической культуры, технологии и ОБЖ':'http://www.sch2001.ru/index.php?sid=1063',
-    'Учителя творческих дисциплин':'http://www.sch2001.ru/index.php?sid=1062'
+teacher_categories_dict = {         # - словарь хранящий профили учителей и ссылки с ним связанные в формате ключ-значение. Профили учителей парсятся при помощи программы парсера профилей, ссылки берутся с сайта школы
+    'Учителя русского языка и литературы':'link_to_teachers_gallery',
+    'Учителя математики и информатики':'link_to_teachers_gallery',
+    'Учителя иностранного языка':'link_to_teachers_gallery',
+    'Учителя естественно-научных предметов':'link_to_teachers_gallery',
+    'Учителя истории и обществознания':'link_to_teachers_gallery',
+    'Учителя физической культуры, технологии и ОБЖ':'link_to_teachers_gallery',
+    'Учителя творческих дисциплин':'link_to_teachers_gallery'
 }
 
 def sort_button_signs(class_type, sorted_sign_list):              #функция для сортировки названий классов по парралелям
-    with open("классы") as f:
+    with open("file_name") as f:
         text = f.read()
-        for line in text.split(':'):
+        for line in text.split(':'):     #каждый класс записан не через пробел, а через выбранный вами знак в файле для удобной работы с ними. в методе split() укажите соответствующий знак
             for clas in class_type:
                 if clas in line:
                     sorted_sign_list.append(line)
@@ -35,22 +35,22 @@ sort_button_signs(high_signs, signs_high)
 
 
 def give_timetable(message, link):          #функция выдает расписание для класса. Передаваемые аргументы - название класса и ссылка на раздел сайта с расписанием для этого класса
-    content = requests.get(link)
+    content = requests.get(link)            # для работы с ссылками URL используется модуль requests
     formatted_timetable = ''     #здесь будет отформатированное распсание для класса
-    soup = BeautifulSoup(content.text, 'html.parser')
-    tables = soup.find_all('table', style="height: 780px; margin-right: 10px; border-collapse: collapse; font-family:Arial Narrow; font-size:14px;")   #парсим все таблицы для классво указанной паралелли
-    for table in tables:
+    soup = BeautifulSoup(content.text, 'html.parser')    # объект класса BeautifulSoup для парсинга нужней нам информации с указанного раздела сайта. здесь - таблицы с расписанием.
+    tables = soup.find_all('table', style="height: 780px; margin-right: 10px; border-collapse: collapse; font-family:Arial Narrow; font-size:14px;")   #парсим все таблицы для классво указанной паралелли (Необходимые теги и их аттрибуты указывайте при вызове метода в соответствии с сайтом вашей школы)
+    for table in tables:         # перебор всех тегов с расписанием
         if message in table.text:            #если в таблице есть упоминание искомого класса:
             text_tags = table.find_all('tr')       #пролистываем все табличные тэги
             for text_tag in text_tags:
-                if text_tag.text.startswith('td') == False:      #если текст внутри табличного тэга не пустышка ( шаблон ):
+                if text_tag.text.startswith('td') == False:      #если текст внутри табличного тэга не пустышка ( шаблон, зависит от того как выполнена ваша таблица на сайте вашей школы, это условие не обязательно :) )
                     formatted_timetable += text_tag.text + '\n'   #добавляем и форматируем как надо в нужную переменную
     return formatted_timetable    #возвращаем отформаченное расписание
 
-def give_all_teachers(message, markup):
-    contents = requests.get(teacher_categories_dict[message])
+def give_all_teachers(message, markup):     #функция добавляет учителей выбранного профиля в соотвествующий контейнер с кнопками ( ниже будет объяснено ). Передаваемые аргументы - профиль, указаный пользователем в сообщении и контейнер для кнопок, куда эти кнопки пойдут
+    contents = requests.get(teacher_categories_dict[message])    # когда бот получает профиль учителей, он обрабатывает ссылку связанную с этим профилем из словаря, используя профиль как ключ
     soup = BeautifulSoup(contents.text, 'html.parser')
-    tags = soup.find_all('h2', style="font-size:20px;")
+    tags = soup.find_all('h2', style="font-size:20px;")    
     for tag in tags:
         formatted_name = ''
         text = tag.text
