@@ -14,6 +14,6 @@ for link in links:   """ перебор ссылок из массива """
         print(class_name)
         clases.append(class_name)      """И заносим его в массив"""
 
-with open("классы", 'w') as f:         """открываем файл для хранения классов школы и при помощи цикла записываем в него классы"""
+with open("name", 'w') as f:         """открываем файл для хранения классов школы и при помощи цикла записываем в него классы"""
     for class_name in clases:
         f.writelines(class_name + ":")
