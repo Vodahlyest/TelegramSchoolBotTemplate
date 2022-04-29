@@ -50,18 +50,18 @@ def give_timetable(message, link):          #функция выдает рас�
 def give_all_teachers(message, markup):     #функция добавляет учителей выбранного профиля в соотвествующий контейнер с кнопками ( ниже будет объяснено ). Передаваемые аргументы - профиль, указаный пользователем в сообщении и контейнер для кнопок, куда эти кнопки пойдут
     contents = requests.get(teacher_categories_dict[message])    # когда бот получает профиль учителей, он обрабатывает ссылку связанную с этим профилем из словаря, используя профиль как ключ
     soup = BeautifulSoup(contents.text, 'html.parser')
-    tags = soup.find_all('h2', style="font-size:20px;")    
-    for tag in tags:
-        formatted_name = ''
-        text = tag.text
-        for i in range(len(text) - 1):
+    tags = soup.find_all('h2', style="font-size:20px;")          # ищем все теги, в которых хранятся ФИО Учителей выбранного профиля
+    for tag in tags:     #перебор найденных тегов                   
+        formatted_name = ''                
+        text = tag.text  #получаем текст из тега
+        for i in range(len(text) - 1):         #следующий фрагмент кода - попытка преобразовать ФИО в читаемый формат ( При разработке и тестировке на сайте выбранной школы это было проблемой ). Эта часть кода не обязательна.
             count = 0
             if text[i].isupper() and text[i - 1] != ' ':
                 formatted_name += (' ')
             formatted_name += text[i]
-        button = types.KeyboardButton(formatted_name)
-        markup.add(button)
-    back_button_one_more = types.KeyboardButton('Назад')
+        button = types.KeyboardButton(formatted_name)    # cоздается кнопка ( в конструкторе класса types.KeyboardButton() указывается ФИО учителя )
+        markup.add(button)           #кнопка добавляется
+    back_button_one_more = types.KeyboardButton('Назад')    #Добавляется кнопка Назад
     markup.add(back_button_one_more)
 
 main_markup = types.ReplyKeyboardMarkup(resize_keyboard = True)    #основное меню (главное)
@@ -89,7 +89,7 @@ for button_name in signs_high:
 back_menu_button2 = types.KeyboardButton('Назад')
 class_markup_high.add(back_menu_button2)
 
-teacher_markup = types.ReplyKeyboardMarkup(resize_keyboard = True)
+teacher_markup = types.ReplyKeyboardMarkup(resize_keyboard = True)        #меню выбора профиля преподователя
 all_categories = list(teacher_categories_dict.keys())
 for category in all_categories:
     button = types.KeyboardButton(category)
@@ -97,41 +97,41 @@ for category in all_categories:
 back_button_teacher = types.KeyboardButton('Назад')
 teacher_markup.add(back_button_teacher)
 
-teachers_by_category = types.ReplyKeyboardMarkup(resize_keyboard = True)
+teachers_by_category = types.ReplyKeyboardMarkup(resize_keyboard = True)        #меню выбра учителей выбранного профиля
 
 @bot.message_handler(commands = ['start', 'help'])       #обрабатывает комманды start и help
 def send_greets(messege):
     bot.send_message(messege.chat.id, "Привет, это бот-помощник школы 2001!", reply_markup = main_markup)
 
-@bot.message_handler(commands = ['timetable'])
+@bot.message_handler(commands = ['timetable'])         #команда /timetable выводит меню выбора Парралелей для которых нужно получить расписание
 def timetable_menu(message):
-    bot.send_message(message.chat.id, "Для какой паралелли найти расписание? ", reply_markup = class_markup_main)
+    bot.send_message(message.chat.id, "Для какой паралелли найти расписание? ", reply_markup = class_markup_main)     
 
-@bot.message_handler(commands = ['10_11'])
+@bot.message_handler(commands = ['10_11'])            #команда /10_11 выводит классы с 10 по 11 парралель 
 def parallel_options_high(message):
     bot.send_message(message.chat.id, "Выбери нужный класс:", reply_markup = class_markup_high)
 
-@bot.message_handler(commands = ['5_9'])
+@bot.message_handler(commands = ['5_9'])              #команда /5_9 выводит классы с 5 по 9 парралель 
 def parallel_options_secondary(message):
     bot.send_message(message.chat.id, "Выбери нужный класс:", reply_markup = class_markup_secondary)
 
-@bot.message_handler(commands = ['teacher_info'])
+@bot.message_handler(commands = ['teacher_info'])     #команда /teacher_info выдает меню выбора профиля преподователя
 def teacher_categories(message):
     bot.send_message(message.chat.id, "Выбери профиль преподователя:", reply_markup = teacher_markup)
 
 @bot.message_handler(content_types = ['text'])           #обрабатывает кнопки при помощи отправляемого ими текста
 def ask_grade(message):
-    if message.text in signs_secondary:
-        awnser = give_timetable(message.text, 'https://sch2001.ru/index.php?sid=1080')
-        bot.send_message(message.chat.id, awnser)
-    elif message.text in signs_high:
-        awnser = give_timetable(message.text, link = 'https://sch2001.ru/index.php?sid=1378')
-        bot.send_message(message.chat.id, awnser)
-    elif message.text == 'Назад':
+    if message.text in signs_secondary:         #если пользователь выбирает класс с 5 по 9 парралель:
+        awnser = give_timetable(message.text, 'https://sch2001.ru/index.php?sid=1080')      #вызов функции для получения рсписания выбранного класса 
+        bot.send_message(message.chat.id, awnser)           #выдаем расписание
+    elif message.text in signs_high:            #если пользователь выбирает класс с 10 по 11 парралель:
+        awnser = give_timetable(message.text, link = 'https://sch2001.ru/index.php?sid=1378')    #вызов функции для получения рсписания выбранного класса 
+        bot.send_message(message.chat.id, awnser)           #выдаем расписание
+    elif message.text == 'Назад':               #кнопка назад выводит пользователю главное меню
         bot.send_message(message.chat.id, "Что вы ходите сделать?", reply_markup = main_markup)
-    elif message.text in teacher_categories_dict.keys():
-        give_all_teachers(message.text, teachers_by_category)
-        bot.send_message(message.chat.id, "Выберите преподователя из списка предложенных: ", reply_markup = teachers_by_category)
+    elif message.text in teacher_categories_dict.keys():        #если пользователь выбрал профиль учителя
+        give_all_teachers(message.text, teachers_by_category)       #вызов функции для заполнения соотвествующего контейнера с кнопками 
+        bot.send_message(message.chat.id, "Выберите преподователя из списка предложенных: ", reply_markup = teachers_by_category)      #предоставляем пользователю выбор преподователя
 
 
 bot.infinity_polling()
