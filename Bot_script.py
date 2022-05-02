@@ -101,7 +101,7 @@ teachers_by_category = types.ReplyKeyboardMarkup(resize_keyboard = True)        
 
 @bot.message_handler(commands = ['start', 'help'])       #обрабатывает комманды start и help
 def send_greets(messege):
-    bot.send_message(messege.chat.id, "Привет, это бот-помощник школы 2001!", reply_markup = main_markup)
+    bot.send_message(messege.chat.id, "Привет, это бот-помощник нашей школы!", reply_markup = main_markup)    #надпись можно поменять на ваше усмотрение
 
 @bot.message_handler(commands = ['timetable'])         #команда /timetable выводит меню выбора Парралелей для которых нужно получить расписание
 def timetable_menu(message):
