@@ -121,10 +121,10 @@ def teacher_categories(message):
 @bot.message_handler(content_types = ['text'])           #обрабатывает кнопки при помощи отправляемого ими текста
 def ask_grade(message):
     if message.text in signs_secondary:         #если пользователь выбирает класс с 5 по 9 парралель:
-        awnser = give_timetable(message.text, 'https://sch2001.ru/index.php?sid=1080')      #вызов функции для получения рсписания выбранного класса 
+        awnser = give_timetable(message.text, 'your_link')      #вызов функции для получения рсписания выбранного класса 
         bot.send_message(message.chat.id, awnser)           #выдаем расписание
     elif message.text in signs_high:            #если пользователь выбирает класс с 10 по 11 парралель:
-        awnser = give_timetable(message.text, link = 'https://sch2001.ru/index.php?sid=1378')    #вызов функции для получения рсписания выбранного класса 
+        awnser = give_timetable(message.text, link = 'your_link')    #вызов функции для получения рсписания выбранного класса 
         bot.send_message(message.chat.id, awnser)           #выдаем расписание
     elif message.text == 'Назад':               #кнопка назад выводит пользователю главное меню
         bot.send_message(message.chat.id, "Что вы ходите сделать?", reply_markup = main_markup)
